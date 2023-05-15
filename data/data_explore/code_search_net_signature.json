@@ -1,0 +1,11 @@
+[
+    {
+        "method_index_in_code_snippet": 0,
+        "string": "@CanIgnoreReturnValue\n  public long copyTo(CharSink sink) throws IOException ",
+        "method_name": "copyTo",
+        "parameter_list": [
+            "CharSink sink"
+        ],
+        "parameter number": 1
+    }
+]

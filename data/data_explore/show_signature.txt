@@ -1,0 +1,6 @@
+Sample Line 7712========================================================================================
+
+[raw]
+{'method_num': 1, 'list': [{'method_index_in_code_snippet': 0, 'parameter number': 2, 'method_name': 'in', 'parameter_list': ['String name', 'Object value'], 'string': 'public static Restriction in(String name, Object value)'}]}
+
+[code]

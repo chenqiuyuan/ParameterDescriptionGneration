@@ -1,0 +1,21 @@
+raw data(raw/java/valid.jsonl):
+
+{"repo": "google/guava", "path": "android/guava/src/com/google/common/io/CharSource.java", "func_name": "CharSource.copyTo", "original_string": "@CanIgnoreReturnValue\n  public long copyTo(CharSink sink) throws IOException {\n    checkNotNull(sink);\n\n    Closer closer = Closer.create();\n    try {\n      Reader reader = closer.register(openStream());\n      Writer writer = closer.register(sink.openStream());\n      return CharStreams.copy(reader, writer);\n    } catch (Throwable e) {\n      throw closer.rethrow(e);\n    } finally {\n      closer.close();\n    }\n  }", "language": "java", "code": "@CanIgnoreReturnValue\n  public long copyTo(CharSink sink) throws IOException {\n    checkNotNull(sink);\n\n    Closer closer = Closer.create();\n    try {\n      Reader reader = closer.register(openStream());\n      Writer writer = closer.register(sink.openStream());\n      return CharStreams.copy(reader, writer);\n    } catch (Throwable e) {\n      throw closer.rethrow(e);\n    } finally {\n      closer.close();\n    }\n  }", "code_tokens": ["public", "long", "copyTo", "(", "CharSink", "sink", ")", "throws", "IOException", "{", "checkNotNull", "(", "sink", ")", ";", "Closer", "closer", "=", "Closer", ".", "create", "(", ")", ";", "try", "{", "Reader", "reader", "=", "closer", ".", "register", "(", "openStream", "(", ")", ")", ";", "Writer", "writer", "=", "closer", ".", "register", "(", "sink", ".", "openStream", "(", ")", ")", ";", "return", "CharStreams", ".", "copy", "(", "reader", ",", "writer", ")", ";", "}", "catch", "(", "Throwable", "e", ")", "{", "throw", "closer", ".", "rethrow", "(", "e", ")", ";", "}", "finally", "{", "closer", ".", "close", "(", ")", ";", "}", "}"], "docstring": "Copies the contents of this source to the given sink.\n\n@return the number of characters copied\n@throws IOException if an I/O error occurs while reading from this source or writing to {@code\nsink}", "docstring_tokens": ["Copies", "the", "contents", "of", "this", "source", "to", "the", "given", "sink", "."], "sha": "7155d12b70a2406fa84d94d4b8b3bc108e89abfd", "url": "https://github.com/google/guava/blob/7155d12b70a2406fa84d94d4b8b3bc108e89abfd/android/guava/src/com/google/common/io/CharSource.java#L208-L222", "partition": "valid"}
+
+flatten data:
+extract each feature into several files. For example.
+code (flatten/java/valid.code):
+"@CanIgnoreReturnValue\n  public long copyTo(CharSink sink) throws IOException {\n    checkNotNull(sink);\n\n    Closer closer = Closer.create();\n    try {\n      Reader reader = closer.register(openStream());\n      Writer writer = closer.register(sink.openStream());\n      return CharStreams.copy(reader, writer);\n    } catch (Throwable e) {\n      throw closer.rethrow(e);\n    } finally {\n      closer.close();\n    }\n  }"
+
+parameters
+[
+    {
+        "method_index_in_code_snippet": 0,
+        "string": "@CanIgnoreReturnValue\n  public long copyTo(CharSink sink) throws IOException ",
+        "method_name": "copyTo",
+        "parameter_list": [
+            "CharSink sink"
+        ],
+        "parameter number": 1
+    }
+]

@@ -1,0 +1,28 @@
+digraph {
+        9 [label=<x<SUP><font point-size='10' color='red'>9</font></SUP>> color=red]
+        12 [label=<y<SUP>12</SUP>> color=red]
+        16 [label=<result<SUP>16</SUP>> color=red]
+        18 -> 16
+        18 [label=<0<SUP>18</SUP>> color=red]
+        22 [label=<y<SUP>22</SUP>> color=red]
+        12 -> 22
+        24 [label=<x<SUP>24</SUP>> color=red]
+        9 -> 24
+        27 [label=<result<SUP>27</SUP>> color=red]
+        29 -> 27
+        29 [label=<y<SUP>29</SUP>> color=red]
+        12 -> 29
+        34 [label=<result<SUP>34</SUP>> color=red]
+        36 -> 34
+        36 [label=<x<SUP>36</SUP>> color=red]
+        9 -> 36
+        40 [label=<irrelevant<SUP>40</SUP>> color=red]
+        42 -> 40
+        42 [label=<"log message"<SUP>42</SUP>> color=red]
+        50 [label=<irrelevant<SUP>50</SUP>> color=red]
+        40 -> 50
+        54 [label=<result<SUP>54</SUP>> color=red]
+        16 -> 54
+        27 -> 54
+        34 -> 54
+}

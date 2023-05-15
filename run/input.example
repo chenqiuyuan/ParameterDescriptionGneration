@@ -1,0 +1,14 @@
+public static String getValueForColumn(ResultSet rs, String columnNameToCheck, Database database) throws SQLException {
+        ResultSetMetaData metadata = rs.getMetaData();
+        int numberOfColumns = metadata.getColumnCount();
+        String correctedColumnName = database.correctObjectName(columnNameToCheck, Column.class);
+        // get the column names; column indexes start from 1
+        for (int i = 1; i < (numberOfColumns + 1); i++) {
+            String columnName = metadata.getColumnLabel(i);
+            // Get the name of the column's table name
+            if (correctedColumnName.equalsIgnoreCase(columnName)) {
+                return rs.getString(columnName);
+            }
+        }
+        return null;
+    }

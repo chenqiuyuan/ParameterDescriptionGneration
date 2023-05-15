@@ -1,0 +1,108 @@
+{
+    "parent": null,
+    "index": 1,
+    "type": "program",
+    "children": [
+        {
+            "parent": 1,
+            "index": 2,
+            "type": "expression_statement",
+            "children": [
+                {
+                    "parent": 2,
+                    "index": 3,
+                    "type": "method_invocation",
+                    "children": [
+                        {
+                            "parent": 3,
+                            "index": 4,
+                            "type": "field_access",
+                            "children": [
+                                {
+                                    "parent": 4,
+                                    "index": 5,
+                                    "type": "field_access",
+                                    "children": [
+                                        {
+                                            "parent": 5,
+                                            "index": 6,
+                                            "type": "identifier",
+                                            "value": "b"
+                                        },
+                                        {
+                                            "parent": 5,
+                                            "index": 7,
+                                            "type": "DotOp",
+                                            "value": "."
+                                        },
+                                        {
+                                            "parent": 5,
+                                            "index": 8,
+                                            "type": "identifier",
+                                            "value": "b"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "parent": 4,
+                                    "index": 9,
+                                    "type": "DotOp",
+                                    "value": "."
+                                },
+                                {
+                                    "parent": 4,
+                                    "index": 10,
+                                    "type": "identifier",
+                                    "value": "outputStream"
+                                }
+                            ]
+                        },
+                        {
+                            "parent": 3,
+                            "index": 11,
+                            "type": "DotOp",
+                            "value": "."
+                        },
+                        {
+                            "parent": 3,
+                            "index": 12,
+                            "type": "identifier",
+                            "value": "print"
+                        },
+                        {
+                            "parent": 3,
+                            "index": 13,
+                            "type": "argument_list",
+                            "children": [
+                                {
+                                    "parent": 13,
+                                    "index": 14,
+                                    "type": "LeftParenOp",
+                                    "value": "("
+                                },
+                                {
+                                    "parent": 13,
+                                    "index": 15,
+                                    "type": "identifier",
+                                    "value": "message"
+                                },
+                                {
+                                    "parent": 13,
+                                    "index": 16,
+                                    "type": "RightParenOp",
+                                    "value": ")"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "parent": 2,
+                    "index": 17,
+                    "type": "SemicolonOp",
+                    "value": ";"
+                }
+            ]
+        }
+    ]
+}

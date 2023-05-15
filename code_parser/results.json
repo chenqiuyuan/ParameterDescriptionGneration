@@ -1,0 +1,382 @@
+{
+    "0": {
+        "type": "program",
+        "parent": null,
+        "children": [
+            1,
+            8,
+            19
+        ]
+    },
+    "1": {
+        "type": "local_variable_declaration",
+        "parent": 0,
+        "children": [
+            2,
+            5,
+            6
+        ]
+    },
+    "2": {
+        "type": "modifiers",
+        "parent": 1,
+        "children": [
+            3,
+            4
+        ]
+    },
+    "3": {
+        "type": "public_keyword",
+        "parent": 2,
+        "value": "public"
+    },
+    "4": {
+        "type": "static_keyword",
+        "parent": 2,
+        "value": "static"
+    },
+    "5": {
+        "type": "type_identifier",
+        "parent": 1,
+        "value": "AuthenticationScheme"
+    },
+    "6": {
+        "type": "variable_declarator",
+        "parent": 1,
+        "children": [
+            7
+        ]
+    },
+    "7": {
+        "type": "identifier",
+        "parent": 6,
+        "value": "basic"
+    },
+    "8": {
+        "type": "ERROR",
+        "parent": 0,
+        "children": [
+            9
+        ]
+    },
+    "9": {
+        "type": "formal_parameters",
+        "parent": 8,
+        "children": [
+            10,
+            11,
+            14,
+            15,
+            18
+        ]
+    },
+    "10": {
+        "type": "LeftParenOp",
+        "parent": 9,
+        "value": "("
+    },
+    "11": {
+        "type": "formal_parameter",
+        "parent": 9,
+        "children": [
+            12,
+            13
+        ]
+    },
+    "12": {
+        "type": "type_identifier",
+        "parent": 11,
+        "value": "String"
+    },
+    "13": {
+        "type": "identifier",
+        "parent": 11,
+        "value": "userName"
+    },
+    "14": {
+        "type": "CommaOp",
+        "parent": 9,
+        "value": ","
+    },
+    "15": {
+        "type": "formal_parameter",
+        "parent": 9,
+        "children": [
+            16,
+            17
+        ]
+    },
+    "16": {
+        "type": "type_identifier",
+        "parent": 15,
+        "value": "String"
+    },
+    "17": {
+        "type": "identifier",
+        "parent": 15,
+        "value": "password"
+    },
+    "18": {
+        "type": "RightParenOp",
+        "parent": 9,
+        "value": ")"
+    },
+    "19": {
+        "type": "block",
+        "parent": 0,
+        "children": [
+            20,
+            21,
+            35,
+            45,
+            55,
+            59
+        ]
+    },
+    "20": {
+        "type": "LeftCurlyOp",
+        "parent": 19,
+        "value": "{"
+    },
+    "21": {
+        "type": "local_variable_declaration",
+        "parent": 19,
+        "children": [
+            22,
+            24,
+            25,
+            34
+        ]
+    },
+    "22": {
+        "type": "modifiers",
+        "parent": 21,
+        "children": [
+            23
+        ]
+    },
+    "23": {
+        "type": "final_keyword",
+        "parent": 22,
+        "value": "final"
+    },
+    "24": {
+        "type": "type_identifier",
+        "parent": 21,
+        "value": "BasicAuthScheme"
+    },
+    "25": {
+        "type": "variable_declarator",
+        "parent": 21,
+        "children": [
+            26,
+            27,
+            28
+        ]
+    },
+    "26": {
+        "type": "identifier",
+        "parent": 25,
+        "value": "scheme"
+    },
+    "27": {
+        "type": "AsgnOp",
+        "parent": 25,
+        "value": "="
+    },
+    "28": {
+        "type": "object_creation_expression",
+        "parent": 25,
+        "children": [
+            29,
+            30,
+            31
+        ]
+    },
+    "29": {
+        "type": "new_keyword",
+        "parent": 28,
+        "value": "new"
+    },
+    "30": {
+        "type": "type_identifier",
+        "parent": 28,
+        "value": "BasicAuthScheme"
+    },
+    "31": {
+        "type": "argument_list",
+        "parent": 28,
+        "children": [
+            32,
+            33
+        ]
+    },
+    "32": {
+        "type": "LeftParenOp",
+        "parent": 31,
+        "value": "("
+    },
+    "33": {
+        "type": "RightParenOp",
+        "parent": 31,
+        "value": ")"
+    },
+    "34": {
+        "type": "SemicolonOp",
+        "parent": 21,
+        "value": ";"
+    },
+    "35": {
+        "type": "expression_statement",
+        "parent": 19,
+        "children": [
+            36,
+            44
+        ]
+    },
+    "36": {
+        "type": "method_invocation",
+        "parent": 35,
+        "children": [
+            37,
+            38,
+            39,
+            40
+        ]
+    },
+    "37": {
+        "type": "identifier",
+        "parent": 36,
+        "value": "scheme"
+    },
+    "38": {
+        "type": "DotOp",
+        "parent": 36,
+        "value": "."
+    },
+    "39": {
+        "type": "identifier",
+        "parent": 36,
+        "value": "setUserName"
+    },
+    "40": {
+        "type": "argument_list",
+        "parent": 36,
+        "children": [
+            41,
+            42,
+            43
+        ]
+    },
+    "41": {
+        "type": "LeftParenOp",
+        "parent": 40,
+        "value": "("
+    },
+    "42": {
+        "type": "identifier",
+        "parent": 40,
+        "value": "userName"
+    },
+    "43": {
+        "type": "RightParenOp",
+        "parent": 40,
+        "value": ")"
+    },
+    "44": {
+        "type": "SemicolonOp",
+        "parent": 35,
+        "value": ";"
+    },
+    "45": {
+        "type": "expression_statement",
+        "parent": 19,
+        "children": [
+            46,
+            54
+        ]
+    },
+    "46": {
+        "type": "method_invocation",
+        "parent": 45,
+        "children": [
+            47,
+            48,
+            49,
+            50
+        ]
+    },
+    "47": {
+        "type": "identifier",
+        "parent": 46,
+        "value": "scheme"
+    },
+    "48": {
+        "type": "DotOp",
+        "parent": 46,
+        "value": "."
+    },
+    "49": {
+        "type": "identifier",
+        "parent": 46,
+        "value": "setPassword"
+    },
+    "50": {
+        "type": "argument_list",
+        "parent": 46,
+        "children": [
+            51,
+            52,
+            53
+        ]
+    },
+    "51": {
+        "type": "LeftParenOp",
+        "parent": 50,
+        "value": "("
+    },
+    "52": {
+        "type": "identifier",
+        "parent": 50,
+        "value": "password"
+    },
+    "53": {
+        "type": "RightParenOp",
+        "parent": 50,
+        "value": ")"
+    },
+    "54": {
+        "type": "SemicolonOp",
+        "parent": 45,
+        "value": ";"
+    },
+    "55": {
+        "type": "return_statement",
+        "parent": 19,
+        "children": [
+            56,
+            57,
+            58
+        ]
+    },
+    "56": {
+        "type": "return_keyword",
+        "parent": 55,
+        "value": "return"
+    },
+    "57": {
+        "type": "identifier",
+        "parent": 55,
+        "value": "scheme"
+    },
+    "58": {
+        "type": "SemicolonOp",
+        "parent": 55,
+        "value": ";"
+    },
+    "59": {
+        "type": "RightCurlyOp",
+        "parent": 19,
+        "value": "}"
+    }
+}

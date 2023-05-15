@@ -1,0 +1,29 @@
+// 这是一个有向图
+digraph {
+	9 [label=<x<SUP><font point-size='10' color='red'>9</font></SUP>>]
+	12 [label=<y<SUP><font point-size='10' color='red'>12</font></SUP>>]
+	16 [label=<result<SUP><font point-size='10' color='red'>16</font></SUP>>]
+	18 -> 16
+	18 [label=<0<SUP><font point-size='10' color='red'>18</font></SUP>>]
+	22 [label=<y<SUP><font point-size='10' color='red'>22</font></SUP>>]
+	12 -> 22
+	24 [label=<x<SUP><font point-size='10' color='red'>24</font></SUP>>]
+	9 -> 24
+	27 [label=<result<SUP><font point-size='10' color='red'>27</font></SUP>>]
+	29 -> 27
+	29 [label=<y<SUP><font point-size='10' color='red'>29</font></SUP>>]
+	12 -> 29
+	34 [label=<result<SUP><font point-size='10' color='red'>34</font></SUP>>]
+	36 -> 34
+	36 [label=<x<SUP><font point-size='10' color='red'>36</font></SUP>>]
+	9 -> 36
+	40 [label=<irrelevant<SUP><font point-size='10' color='red'>40</font></SUP>>]
+	42 -> 40
+	42 [label=<"log message"<SUP><font point-size='10' color='red'>42</font></SUP>>]
+	50 [label=<irrelevant<SUP><font point-size='10' color='red'>50</font></SUP>>]
+	40 -> 50
+	54 [label=<result<SUP><font point-size='10' color='red'>54</font></SUP>>]
+	16 -> 54
+	27 -> 54
+	34 -> 54
+}

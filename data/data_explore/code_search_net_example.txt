@@ -1,0 +1,809 @@
+Sample Number: 0
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Copies', 'the', 'contents', 'of', 'this', 'source', 'to', 'the', 'given', 'sink', '.']
+
+
+Sample Number: 1
+----------------------------------------------------------------------------------------
+[code]:
+public String read() throws IOException {
+    Closer closer = Closer.create();
+    try {
+      Reader reader = closer.register(openStream());
+      return CharStreams.toString(reader);
+    } catch (Throwable e) {
+      throw closer.rethrow(e);
+    } finally {
+      closer.close();
+    }
+  }
+
+
+Sample Number: 1
+----------------------------------------------------------------------------------------
+[docstring]:
+Reads the contents of this source as a string.
+
+@throws IOException if an I/O error occurs while reading from this source
+
+
+Sample Number: 1
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'String', 'read', '(', ')', 'throws', 'IOException', '{', 'Closer', 'closer', '=', 'Closer', '.', 'create', '(', ')', ';', 'try', '{', 'Reader', 'reader', '=', 'closer', '.', 'register', '(', 'openStream', '(', ')', ')', ';', 'return', 'CharStreams', '.', 'toString', '(', 'reader', ')', ';', '}', 'catch', '(', 'Throwable', 'e', ')', '{', 'throw', 'closer', '.', 'rethrow', '(', 'e', ')', ';', '}', 'finally', '{', 'closer', '.', 'close', '(', ')', ';', '}', '}']
+
+
+Sample Number: 1
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Reads', 'the', 'contents', 'of', 'this', 'source', 'as', 'a', 'string', '.']
+
+
+Sample Number: 2
+----------------------------------------------------------------------------------------
+[code]:
+public ImmutableList<String> readLines() throws IOException {
+    Closer closer = Closer.create();
+    try {
+      BufferedReader reader = closer.register(openBufferedStream());
+      List<String> result = Lists.newArrayList();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        result.add(line);
+      }
+      return ImmutableList.copyOf(result);
+    } catch (Throwable e) {
+      throw closer.rethrow(e);
+    } finally {
+      closer.close();
+    }
+  }
+
+
+Sample Number: 2
+----------------------------------------------------------------------------------------
+[docstring]:
+Reads all the lines of this source as a list of strings. The returned list will be empty if
+this source is empty.
+
+<p>Like {@link BufferedReader#readLine()}, this method considers a line to be a sequence of
+text that is terminated by (but does not include) one of {@code \r\n}, {@code \r} or {@code
+\n}. If the source's content does not end in a line termination sequence, it is treated as if
+it does.
+
+@throws IOException if an I/O error occurs while reading from this source
+
+
+Sample Number: 2
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'ImmutableList', '<', 'String', '>', 'readLines', '(', ')', 'throws', 'IOException', '{', 'Closer', 'closer', '=', 'Closer', '.', 'create', '(', ')', ';', 'try', '{', 'BufferedReader', 'reader', '=', 'closer', '.', 'register', '(', 'openBufferedStream', '(', ')', ')', ';', 'List', '<', 'String', '>', 'result', '=', 'Lists', '.', 'newArrayList', '(', ')', ';', 'String', 'line', ';', 'while', '(', '(', 'line', '=', 'reader', '.', 'readLine', '(', ')', ')', '!=', 'null', ')', '{', 'result', '.', 'add', '(', 'line', ')', ';', '}', 'return', 'ImmutableList', '.', 'copyOf', '(', 'result', ')', ';', '}', 'catch', '(', 'Throwable', 'e', ')', '{', 'throw', 'closer', '.', 'rethrow', '(', 'e', ')', ';', '}', 'finally', '{', 'closer', '.', 'close', '(', ')', ';', '}', '}']
+
+
+Sample Number: 2
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Reads', 'all', 'the', 'lines', 'of', 'this', 'source', 'as', 'a', 'list', 'of', 'strings', '.', 'The', 'returned', 'list', 'will', 'be', 'empty', 'if', 'this', 'source', 'is', 'empty', '.']
+
+
+Sample Number: 3
+----------------------------------------------------------------------------------------
+[code]:
+@Override
+  public int read(byte[] b, int off, int len) throws IOException {
+    // Obey InputStream contract.
+    checkPositionIndexes(off, off + len, b.length);
+    if (len == 0) {
+      return 0;
+    }
+
+    // The rest of this method implements the process described by the CharsetEncoder javadoc.
+    int totalBytesRead = 0;
+    boolean doneEncoding = endOfInput;
+
+    DRAINING:
+    while (true) {
+      // We stay in draining mode until there are no bytes left in the output buffer. Then we go
+      // back to encoding/flushing.
+      if (draining) {
+        totalBytesRead += drain(b, off + totalBytesRead, len - totalBytesRead);
+        if (totalBytesRead == len || doneFlushing) {
+          return (totalBytesRead > 0) ? totalBytesRead : -1;
+        }
+        draining = false;
+        byteBuffer.clear();
+      }
+
+      while (true) {
+        // We call encode until there is no more input. The last call to encode will have endOfInput
+        // == true. Then there is a final call to flush.
+        CoderResult result;
+        if (doneFlushing) {
+          result = CoderResult.UNDERFLOW;
+        } else if (doneEncoding) {
+          result = encoder.flush(byteBuffer);
+        } else {
+          result = encoder.encode(charBuffer, byteBuffer, endOfInput);
+        }
+
+        if (result.isOverflow()) {
+          // Not enough room in output buffer--drain it, creating a bigger buffer if necessary.
+          startDraining(true);
+          continue DRAINING;
+        } else if (result.isUnderflow()) {
+          // If encoder underflows, it means either:
+          // a) the final flush() succeeded; next drain (then done)
+          // b) we encoded all of the input; next flush
+          // c) we ran of out input to encode; next read more input
+          if (doneEncoding) { // (a)
+            doneFlushing = true;
+            startDraining(false);
+            continue DRAINING;
+          } else if (endOfInput) { // (b)
+            doneEncoding = true;
+          } else { // (c)
+            readMoreChars();
+          }
+        } else if (result.isError()) {
+          // Only reach here if a CharsetEncoder with non-REPLACE settings is used.
+          result.throwException();
+          return 0; // Not called.
+        }
+      }
+    }
+  }
+
+
+Sample Number: 3
+----------------------------------------------------------------------------------------
+[docstring]:
+buffer when possible.
+
+
+Sample Number: 3
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'int', 'read', '(', 'byte', '[', ']', 'b', ',', 'int', 'off', ',', 'int', 'len', ')', 'throws', 'IOException', '{', 'checkPositionIndexes', '(', 'off', ',', 'off', '+', 'len', ',', 'b', '.', 'length', ')', ';', 'if', '(', 'len', '==', '0', ')', '{', 'return', '0', ';', '}', 'int', 'totalBytesRead', '=', '0', ';', 'boolean', 'doneEncoding', '=', 'endOfInput', ';', 'DRAINING', ':', 'while', '(', 'true', ')', '{', 'if', '(', 'draining', ')', '{', 'totalBytesRead', '+=', 'drain', '(', 'b', ',', 'off', '+', 'totalBytesRead', ',', 'len', '-', 'totalBytesRead', ')', ';', 'if', '(', 'totalBytesRead', '==', 'len', '||', 'doneFlushing', ')', '{', 'return', '(', 'totalBytesRead', '>', '0', ')', '?', 'totalBytesRead', ':', '-', '1', ';', '}', 'draining', '=', 'false', ';', 'byteBuffer', '.', 'clear', '(', ')', ';', '}', 'while', '(', 'true', ')', '{', 'CoderResult', 'result', ';', 'if', '(', 'doneFlushing', ')', '{', 'result', '=', 'CoderResult', '.', 'UNDERFLOW', ';', '}', 'else', 'if', '(', 'doneEncoding', ')', '{', 'result', '=', 'encoder', '.', 'flush', '(', 'byteBuffer', ')', ';', '}', 'else', '{', 'result', '=', 'encoder', '.', 'encode', '(', 'charBuffer', ',', 'byteBuffer', ',', 'endOfInput', ')', ';', '}', 'if', '(', 'result', '.', 'isOverflow', '(', ')', ')', '{', 'startDraining', '(', 'true', ')', ';', 'continue', 'DRAINING', ';', '}', 'else', 'if', '(', 'result', '.', 'isUnderflow', '(', ')', ')', '{', 'if', '(', 'doneEncoding', ')', '{', 'doneFlushing', '=', 'true', ';', 'startDraining', '(', 'false', ')', ';', 'continue', 'DRAINING', ';', '}', 'else', 'if', '(', 'endOfInput', ')', '{', 'doneEncoding', '=', 'true', ';', '}', 'else', '{', 'readMoreChars', '(', ')', ';', '}', '}', 'else', 'if', '(', 'result', '.', 'isError', '(', ')', ')', '{', 'result', '.', 'throwException', '(', ')', ';', 'return', '0', ';', '}', '}', '}', '}']
+
+
+Sample Number: 3
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['buffer', 'when', 'possible', '.']
+
+
+Sample Number: 4
+----------------------------------------------------------------------------------------
+[code]:
+private static CharBuffer grow(CharBuffer buf) {
+    char[] copy = Arrays.copyOf(buf.array(), buf.capacity() * 2);
+    CharBuffer bigger = CharBuffer.wrap(copy);
+    bigger.position(buf.position());
+    bigger.limit(buf.limit());
+    return bigger;
+  }
+
+
+Sample Number: 4
+----------------------------------------------------------------------------------------
+[docstring]:
+Returns a new CharBuffer identical to buf, except twice the capacity.
+
+
+Sample Number: 4
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['private', 'static', 'CharBuffer', 'grow', '(', 'CharBuffer', 'buf', ')', '{', 'char', '[', ']', 'copy', '=', 'Arrays', '.', 'copyOf', '(', 'buf', '.', 'array', '(', ')', ',', 'buf', '.', 'capacity', '(', ')', '*', '2', ')', ';', 'CharBuffer', 'bigger', '=', 'CharBuffer', '.', 'wrap', '(', 'copy', ')', ';', 'bigger', '.', 'position', '(', 'buf', '.', 'position', '(', ')', ')', ';', 'bigger', '.', 'limit', '(', 'buf', '.', 'limit', '(', ')', ')', ';', 'return', 'bigger', ';', '}']
+
+
+Sample Number: 4
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Returns', 'a', 'new', 'CharBuffer', 'identical', 'to', 'buf', 'except', 'twice', 'the', 'capacity', '.']
+
+
+Sample Number: 5
+----------------------------------------------------------------------------------------
+[code]:
+private void readMoreChars() throws IOException {
+    // Possibilities:
+    // 1) array has space available on right hand side (between limit and capacity)
+    // 2) array has space available on left hand side (before position)
+    // 3) array has no space available
+    //
+    // In case 2 we shift the existing chars to the left, and in case 3 we create a bigger
+    // array, then they both become case 1.
+
+    if (availableCapacity(charBuffer) == 0) {
+      if (charBuffer.position() > 0) {
+        // (2) There is room in the buffer. Move existing bytes to the beginning.
+        charBuffer.compact().flip();
+      } else {
+        // (3) Entire buffer is full, need bigger buffer.
+        charBuffer = grow(charBuffer);
+      }
+    }
+
+    // (1) Read more characters into free space at end of array.
+    int limit = charBuffer.limit();
+    int numChars = reader.read(charBuffer.array(), limit, availableCapacity(charBuffer));
+    if (numChars == -1) {
+      endOfInput = true;
+    } else {
+      charBuffer.limit(limit + numChars);
+    }
+  }
+
+
+Sample Number: 5
+----------------------------------------------------------------------------------------
+[docstring]:
+Handle the case of underflow caused by needing more input characters.
+
+
+Sample Number: 5
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['private', 'void', 'readMoreChars', '(', ')', 'throws', 'IOException', '{', 'if', '(', 'availableCapacity', '(', 'charBuffer', ')', '==', '0', ')', '{', 'if', '(', 'charBuffer', '.', 'position', '(', ')', '>', '0', ')', '{', 'charBuffer', '.', 'compact', '(', ')', '.', 'flip', '(', ')', ';', '}', 'else', '{', 'charBuffer', '=', 'grow', '(', 'charBuffer', ')', ';', '}', '}', 'int', 'limit', '=', 'charBuffer', '.', 'limit', '(', ')', ';', 'int', 'numChars', '=', 'reader', '.', 'read', '(', 'charBuffer', '.', 'array', '(', ')', ',', 'limit', ',', 'availableCapacity', '(', 'charBuffer', ')', ')', ';', 'if', '(', 'numChars', '==', '-', '1', ')', '{', 'endOfInput', '=', 'true', ';', '}', 'else', '{', 'charBuffer', '.', 'limit', '(', 'limit', '+', 'numChars', ')', ';', '}', '}']
+
+
+Sample Number: 5
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Handle', 'the', 'case', 'of', 'underflow', 'caused', 'by', 'needing', 'more', 'input', 'characters', '.']
+
+
+Sample Number: 6
+----------------------------------------------------------------------------------------
+[code]:
+private void startDraining(boolean overflow) {
+    byteBuffer.flip();
+    if (overflow && byteBuffer.remaining() == 0) {
+      byteBuffer = ByteBuffer.allocate(byteBuffer.capacity() * 2);
+    } else {
+      draining = true;
+    }
+  }
+
+
+Sample Number: 6
+----------------------------------------------------------------------------------------
+[docstring]:
+Flips the buffer output buffer so we can start reading bytes from it. If we are starting to
+drain because there was overflow, and there aren't actually any characters to drain, then the
+overflow must be due to a small output buffer.
+
+
+Sample Number: 6
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['private', 'void', 'startDraining', '(', 'boolean', 'overflow', ')', '{', 'byteBuffer', '.', 'flip', '(', ')', ';', 'if', '(', 'overflow', '&&', 'byteBuffer', '.', 'remaining', '(', ')', '==', '0', ')', '{', 'byteBuffer', '=', 'ByteBuffer', '.', 'allocate', '(', 'byteBuffer', '.', 'capacity', '(', ')', '*', '2', ')', ';', '}', 'else', '{', 'draining', '=', 'true', ';', '}', '}']
+
+
+Sample Number: 6
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Flips', 'the', 'buffer', 'output', 'buffer', 'so', 'we', 'can', 'start', 'reading', 'bytes', 'from', 'it', '.', 'If', 'we', 'are', 'starting', 'to', 'drain', 'because', 'there', 'was', 'overflow', 'and', 'there', 'aren', 't', 'actually', 'any', 'characters', 'to', 'drain', 'then', 'the', 'overflow', 'must', 'be', 'due', 'to', 'a', 'small', 'output', 'buffer', '.']
+
+
+Sample Number: 7
+----------------------------------------------------------------------------------------
+[code]:
+@GwtIncompatible // Array.newInstance(Class, int)
+  public static <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
+    return toArray(iterable, ObjectArrays.newArray(type, 0));
+  }
+
+
+Sample Number: 7
+----------------------------------------------------------------------------------------
+[docstring]:
+Copies an iterable's elements into an array.
+
+@param iterable the iterable to copy
+@param type the type of the elements
+@return a newly-allocated array into which all the elements of the iterable have been copied
+
+
+Sample Number: 7
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'static', '<', 'T', '>', 'T', '[', ']', 'toArray', '(', 'Iterable', '<', '?', 'extends', 'T', '>', 'iterable', ',', 'Class', '<', 'T', '>', 'type', ')', '{', 'return', 'toArray', '(', 'iterable', ',', 'ObjectArrays', '.', 'newArray', '(', 'type', ',', '0', ')', ')', ';', '}']
+
+
+Sample Number: 7
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Copies', 'an', 'iterable', 's', 'elements', 'into', 'an', 'array', '.']
+
+
+Sample Number: 8
+----------------------------------------------------------------------------------------
+[code]:
+public static boolean isEmpty(Iterable<?> iterable) {
+    if (iterable instanceof Collection) {
+      return ((Collection<?>) iterable).isEmpty();
+    }
+    return !iterable.iterator().hasNext();
+  }
+
+
+Sample Number: 8
+----------------------------------------------------------------------------------------
+[docstring]:
+Determines if the given iterable contains no elements.
+
+<p>There is no precise {@link Iterator} equivalent to this method, since one can only ask an
+iterator whether it has any elements <i>remaining</i> (which one does using {@link
+Iterator#hasNext}).
+
+<p><b>{@code Stream} equivalent:</b> {@code !stream.findAny().isPresent()}
+
+@return {@code true} if the iterable contains no elements
+
+
+Sample Number: 8
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'static', 'boolean', 'isEmpty', '(', 'Iterable', '<', '?', '>', 'iterable', ')', '{', 'if', '(', 'iterable', 'instanceof', 'Collection', ')', '{', 'return', '(', '(', 'Collection', '<', '?', '>', ')', 'iterable', ')', '.', 'isEmpty', '(', ')', ';', '}', 'return', '!', 'iterable', '.', 'iterator', '(', ')', '.', 'hasNext', '(', ')', ';', '}']
+
+
+Sample Number: 8
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Determines', 'if', 'the', 'given', 'iterable', 'contains', 'no', 'elements', '.']
+
+
+Sample Number: 9
+----------------------------------------------------------------------------------------
+[code]:
+static <T> Function<Iterable<? extends T>, Iterator<? extends T>> toIterator() {
+    return new Function<Iterable<? extends T>, Iterator<? extends T>>() {
+      @Override
+      public Iterator<? extends T> apply(Iterable<? extends T> iterable) {
+        return iterable.iterator();
+      }
+    };
+  }
+
+
+Sample Number: 9
+----------------------------------------------------------------------------------------
+[docstring]:
+Useful as a public method?
+
+
+Sample Number: 9
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['static', '<', 'T', '>', 'Function', '<', 'Iterable', '<', '?', 'extends', 'T', '>', ',', 'Iterator', '<', '?', 'extends', 'T', '>', '>', 'toIterator', '(', ')', '{', 'return', 'new', 'Function', '<', 'Iterable', '<', '?', 'extends', 'T', '>', ',', 'Iterator', '<', '?', 'extends', 'T', '>', '>', '(', ')', '{', 'public', 'Iterator', '<', '?', 'extends', 'T', '>', 'apply', '(', 'Iterable', '<', '?', 'extends', 'T', '>', 'iterable', ')', '{', 'return', 'iterable', '.', 'iterator', '(', ')', ';', '}', '}', ';', '}']
+
+
+Sample Number: 9
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Useful', 'as', 'a', 'public', 'method?']
+
+
+Sample Number: 10
+----------------------------------------------------------------------------------------
+[code]:
+private static <T> Iterator<T> consumingForArray(final T... elements) {
+    return new UnmodifiableIterator<T>() {
+      int index = 0;
+
+      @Override
+      public boolean hasNext() {
+        return index < elements.length;
+      }
+
+      @Override
+      public T next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        T result = elements[index];
+        elements[index] = null;
+        index++;
+        return result;
+      }
+    };
+  }
+
+
+Sample Number: 10
+----------------------------------------------------------------------------------------
+[docstring]:
+Returns an Iterator that walks the specified array, nulling out elements behind it. This can
+avoid memory leaks when an element is no longer necessary.
+
+<p>This is mainly just to avoid the intermediate ArrayDeque in ConsumingQueueIterator.
+
+
+Sample Number: 10
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['private', 'static', '<', 'T', '>', 'Iterator', '<', 'T', '>', 'consumingForArray', '(', 'final', 'T', '...', 'elements', ')', '{', 'return', 'new', 'UnmodifiableIterator', '<', 'T', '>', '(', ')', '{', 'int', 'index', '=', '0', ';', 'public', 'boolean', 'hasNext', '(', ')', '{', 'return', 'index', '<', 'elements', '.', 'length', ';', '}', 'public', 'T', 'next', '(', ')', '{', 'if', '(', '!', 'hasNext', '(', ')', ')', '{', 'throw', 'new', 'NoSuchElementException', '(', ')', ';', '}', 'T', 'result', '=', 'elements', '[', 'index', ']', ';', 'elements', '[', 'index', ']', '=', 'null', ';', 'index', '++', ';', 'return', 'result', ';', '}', '}', ';', '}']
+
+
+Sample Number: 10
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Returns', 'an', 'Iterator', 'that', 'walks', 'the', 'specified', 'array', 'nulling', 'out', 'elements', 'behind', 'it', '.', 'This', 'can', 'avoid', 'memory', 'leaks', 'when', 'an', 'element', 'is', 'no', 'longer', 'necessary', '.']
+
+
+Sample Number: 11
+----------------------------------------------------------------------------------------
+[code]:
+static <T> Iterator<T> concatNoDefensiveCopy(Iterator<? extends T>... inputs) {
+    for (Iterator<? extends T> input : checkNotNull(inputs)) {
+      checkNotNull(input);
+    }
+    return concat(consumingForArray(inputs));
+  }
+
+
+Sample Number: 11
+----------------------------------------------------------------------------------------
+[docstring]:
+Concats a varargs array of iterators without making a defensive copy of the array.
+
+
+Sample Number: 11
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['static', '<', 'T', '>', 'Iterator', '<', 'T', '>', 'concatNoDefensiveCopy', '(', 'Iterator', '<', '?', 'extends', 'T', '>', '...', 'inputs', ')', '{', 'for', '(', 'Iterator', '<', '?', 'extends', 'T', '>', 'input', ':', 'checkNotNull', '(', 'inputs', ')', ')', '{', 'checkNotNull', '(', 'input', ')', ';', '}', 'return', 'concat', '(', 'consumingForArray', '(', 'inputs', ')', ')', ';', '}']
+
+
+Sample Number: 11
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Concats', 'a', 'varargs', 'array', 'of', 'iterators', 'without', 'making', 'a', 'defensive', 'copy', 'of', 'the', 'array', '.']
+
+
+Sample Number: 12
+----------------------------------------------------------------------------------------
+[code]:
+static void clear(Iterator<?> iterator) {
+    checkNotNull(iterator);
+    while (iterator.hasNext()) {
+      iterator.next();
+      iterator.remove();
+    }
+  }
+
+
+Sample Number: 12
+----------------------------------------------------------------------------------------
+[docstring]:
+Clears the iterator using its remove method.
+
+
+Sample Number: 12
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['static', 'void', 'clear', '(', 'Iterator', '<', '?', '>', 'iterator', ')', '{', 'checkNotNull', '(', 'iterator', ')', ';', 'while', '(', 'iterator', '.', 'hasNext', '(', ')', ')', '{', 'iterator', '.', 'next', '(', ')', ';', 'iterator', '.', 'remove', '(', ')', ';', '}', '}']
+
+
+Sample Number: 12
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Clears', 'the', 'iterator', 'using', 'its', 'remove', 'method', '.']
+
+
+Sample Number: 13
+----------------------------------------------------------------------------------------
+[code]:
+public void write(byte[] bytes) throws IOException {
+    checkNotNull(bytes);
+
+    Closer closer = Closer.create();
+    try {
+      OutputStream out = closer.register(openStream());
+      out.write(bytes);
+      out.flush(); // https://code.google.com/p/guava-libraries/issues/detail?id=1330
+    } catch (Throwable e) {
+      throw closer.rethrow(e);
+    } finally {
+      closer.close();
+    }
+  }
+
+
+Sample Number: 13
+----------------------------------------------------------------------------------------
+[docstring]:
+Writes all the given bytes to this sink.
+
+@throws IOException if an I/O occurs while writing to this sink
+
+
+Sample Number: 13
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'void', 'write', '(', 'byte', '[', ']', 'bytes', ')', 'throws', 'IOException', '{', 'checkNotNull', '(', 'bytes', ')', ';', 'Closer', 'closer', '=', 'Closer', '.', 'create', '(', ')', ';', 'try', '{', 'OutputStream', 'out', '=', 'closer', '.', 'register', '(', 'openStream', '(', ')', ')', ';', 'out', '.', 'write', '(', 'bytes', ')', ';', 'out', '.', 'flush', '(', ')', ';', '}', 'catch', '(', 'Throwable', 'e', ')', '{', 'throw', 'closer', '.', 'rethrow', '(', 'e', ')', ';', '}', 'finally', '{', 'closer', '.', 'close', '(', ')', ';', '}', '}']
+
+
+Sample Number: 13
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Writes', 'all', 'the', 'given', 'bytes', 'to', 'this', 'sink', '.']
+
+
+Sample Number: 14
+----------------------------------------------------------------------------------------
+[code]:
+public static CacheBuilderSpec parse(String cacheBuilderSpecification) {
+    CacheBuilderSpec spec = new CacheBuilderSpec(cacheBuilderSpecification);
+    if (!cacheBuilderSpecification.isEmpty()) {
+      for (String keyValuePair : KEYS_SPLITTER.split(cacheBuilderSpecification)) {
+        List<String> keyAndValue = ImmutableList.copyOf(KEY_VALUE_SPLITTER.split(keyValuePair));
+        checkArgument(!keyAndValue.isEmpty(), "blank key-value pair");
+        checkArgument(
+            keyAndValue.size() <= 2,
+            "key-value pair %s with more than one equals sign",
+            keyValuePair);
+
+        // Find the ValueParser for the current key.
+        String key = keyAndValue.get(0);
+        ValueParser valueParser = VALUE_PARSERS.get(key);
+        checkArgument(valueParser != null, "unknown key %s", key);
+
+        String value = keyAndValue.size() == 1 ? null : keyAndValue.get(1);
+        valueParser.parse(spec, key, value);
+      }
+    }
+
+    return spec;
+  }
+
+
+Sample Number: 14
+----------------------------------------------------------------------------------------
+[docstring]:
+Creates a CacheBuilderSpec from a string.
+
+@param cacheBuilderSpecification the string form
+
+
+Sample Number: 14
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'static', 'CacheBuilderSpec', 'parse', '(', 'String', 'cacheBuilderSpecification', ')', '{', 'CacheBuilderSpec', 'spec', '=', 'new', 'CacheBuilderSpec', '(', 'cacheBuilderSpecification', ')', ';', 'if', '(', '!', 'cacheBuilderSpecification', '.', 'isEmpty', '(', ')', ')', '{', 'for', '(', 'String', 'keyValuePair', ':', 'KEYS_SPLITTER', '.', 'split', '(', 'cacheBuilderSpecification', ')', ')', '{', 'List', '<', 'String', '>', 'keyAndValue', '=', 'ImmutableList', '.', 'copyOf', '(', 'KEY_VALUE_SPLITTER', '.', 'split', '(', 'keyValuePair', ')', ')', ';', 'checkArgument', '(', '!', 'keyAndValue', '.', 'isEmpty', '(', ')', ',', '"blank key-value pair"', ')', ';', 'checkArgument', '(', 'keyAndValue', '.', 'size', '(', ')', '<=', '2', ',', '"key-value pair %s with more than one equals sign"', ',', 'keyValuePair', ')', ';', 'String', 'key', '=', 'keyAndValue', '.', 'get', '(', '0', ')', ';', 'ValueParser', 'valueParser', '=', 'VALUE_PARSERS', '.', 'get', '(', 'key', ')', ';', 'checkArgument', '(', 'valueParser', '!=', 'null', ',', '"unknown key %s"', ',', 'key', ')', ';', 'String', 'value', '=', 'keyAndValue', '.', 'size', '(', ')', '==', '1', '?', 'null', ':', 'keyAndValue', '.', 'get', '(', '1', ')', ';', 'valueParser', '.', 'parse', '(', 'spec', ',', 'key', ',', 'value', ')', ';', '}', '}', 'return', 'spec', ';', '}']
+
+
+Sample Number: 14
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Creates', 'a', 'CacheBuilderSpec', 'from', 'a', 'string', '.']
+
+
+Sample Number: 15
+----------------------------------------------------------------------------------------
+[code]:
+CacheBuilder<Object, Object> toCacheBuilder() {
+    CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+    if (initialCapacity != null) {
+      builder.initialCapacity(initialCapacity);
+    }
+    if (maximumSize != null) {
+      builder.maximumSize(maximumSize);
+    }
+    if (maximumWeight != null) {
+      builder.maximumWeight(maximumWeight);
+    }
+    if (concurrencyLevel != null) {
+      builder.concurrencyLevel(concurrencyLevel);
+    }
+    if (keyStrength != null) {
+      switch (keyStrength) {
+        case WEAK:
+          builder.weakKeys();
+          break;
+        default:
+          throw new AssertionError();
+      }
+    }
+    if (valueStrength != null) {
+      switch (valueStrength) {
+        case SOFT:
+          builder.softValues();
+          break;
+        case WEAK:
+          builder.weakValues();
+          break;
+        default:
+          throw new AssertionError();
+      }
+    }
+    if (recordStats != null && recordStats) {
+      builder.recordStats();
+    }
+    if (writeExpirationTimeUnit != null) {
+      builder.expireAfterWrite(writeExpirationDuration, writeExpirationTimeUnit);
+    }
+    if (accessExpirationTimeUnit != null) {
+      builder.expireAfterAccess(accessExpirationDuration, accessExpirationTimeUnit);
+    }
+    if (refreshTimeUnit != null) {
+      builder.refreshAfterWrite(refreshDuration, refreshTimeUnit);
+    }
+
+    return builder;
+  }
+
+
+Sample Number: 15
+----------------------------------------------------------------------------------------
+[docstring]:
+Returns a CacheBuilder configured according to this instance's specification.
+
+
+Sample Number: 15
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['CacheBuilder', '<', 'Object', ',', 'Object', '>', 'toCacheBuilder', '(', ')', '{', 'CacheBuilder', '<', 'Object', ',', 'Object', '>', 'builder', '=', 'CacheBuilder', '.', 'newBuilder', '(', ')', ';', 'if', '(', 'initialCapacity', '!=', 'null', ')', '{', 'builder', '.', 'initialCapacity', '(', 'initialCapacity', ')', ';', '}', 'if', '(', 'maximumSize', '!=', 'null', ')', '{', 'builder', '.', 'maximumSize', '(', 'maximumSize', ')', ';', '}', 'if', '(', 'maximumWeight', '!=', 'null', ')', '{', 'builder', '.', 'maximumWeight', '(', 'maximumWeight', ')', ';', '}', 'if', '(', 'concurrencyLevel', '!=', 'null', ')', '{', 'builder', '.', 'concurrencyLevel', '(', 'concurrencyLevel', ')', ';', '}', 'if', '(', 'keyStrength', '!=', 'null', ')', '{', 'switch', '(', 'keyStrength', ')', '{', 'case', 'WEAK', ':', 'builder', '.', 'weakKeys', '(', ')', ';', 'break', ';', 'default', ':', 'throw', 'new', 'AssertionError', '(', ')', ';', '}', '}', 'if', '(', 'valueStrength', '!=', 'null', ')', '{', 'switch', '(', 'valueStrength', ')', '{', 'case', 'SOFT', ':', 'builder', '.', 'softValues', '(', ')', ';', 'break', ';', 'case', 'WEAK', ':', 'builder', '.', 'weakValues', '(', ')', ';', 'break', ';', 'default', ':', 'throw', 'new', 'AssertionError', '(', ')', ';', '}', '}', 'if', '(', 'recordStats', '!=', 'null', '&&', 'recordStats', ')', '{', 'builder', '.', 'recordStats', '(', ')', ';', '}', 'if', '(', 'writeExpirationTimeUnit', '!=', 'null', ')', '{', 'builder', '.', 'expireAfterWrite', '(', 'writeExpirationDuration', ',', 'writeExpirationTimeUnit', ')', ';', '}', 'if', '(', 'accessExpirationTimeUnit', '!=', 'null', ')', '{', 'builder', '.', 'expireAfterAccess', '(', 'accessExpirationDuration', ',', 'accessExpirationTimeUnit', ')', ';', '}', 'if', '(', 'refreshTimeUnit', '!=', 'null', ')', '{', 'builder', '.', 'refreshAfterWrite', '(', 'refreshDuration', ',', 'refreshTimeUnit', ')', ';', '}', 'return', 'builder', ';', '}']
+
+
+Sample Number: 15
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Returns', 'a', 'CacheBuilder', 'configured', 'according', 'to', 'this', 'instance', 's', 'specification', '.']
+
+
+Sample Number: 16
+----------------------------------------------------------------------------------------
+[code]:
+public Joiner skipNulls() {
+    return new Joiner(this) {
+      @Override
+      public <A extends Appendable> A appendTo(A appendable, Iterator<?> parts) throws IOException {
+        checkNotNull(appendable, "appendable");
+        checkNotNull(parts, "parts");
+        while (parts.hasNext()) {
+          Object part = parts.next();
+          if (part != null) {
+            appendable.append(Joiner.this.toString(part));
+            break;
+          }
+        }
+        while (parts.hasNext()) {
+          Object part = parts.next();
+          if (part != null) {
+            appendable.append(separator);
+            appendable.append(Joiner.this.toString(part));
+          }
+        }
+        return appendable;
+      }
+
+      @Override
+      public Joiner useForNull(String nullText) {
+        throw new UnsupportedOperationException("already specified skipNulls");
+      }
+
+      @Override
+      public MapJoiner withKeyValueSeparator(String kvs) {
+        throw new UnsupportedOperationException("can't use .skipNulls() with maps");
+      }
+    };
+  }
+
+
+Sample Number: 16
+----------------------------------------------------------------------------------------
+[docstring]:
+Returns a joiner with the same behavior as this joiner, except automatically skipping over any
+provided null elements.
+
+
+Sample Number: 16
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'Joiner', 'skipNulls', '(', ')', '{', 'return', 'new', 'Joiner', '(', 'this', ')', '{', 'public', '<', 'A', 'extends', 'Appendable', '>', 'A', 'appendTo', '(', 'A', 'appendable', ',', 'Iterator', '<', '?', '>', 'parts', ')', 'throws', 'IOException', '{', 'checkNotNull', '(', 'appendable', ',', '"appendable"', ')', ';', 'checkNotNull', '(', 'parts', ',', '"parts"', ')', ';', 'while', '(', 'parts', '.', 'hasNext', '(', ')', ')', '{', 'Object', 'part', '=', 'parts', '.', 'next', '(', ')', ';', 'if', '(', 'part', '!=', 'null', ')', '{', 'appendable', '.', 'append', '(', 'Joiner', '.', 'this', '.', 'toString', '(', 'part', ')', ')', ';', 'break', ';', '}', '}', 'while', '(', 'parts', '.', 'hasNext', '(', ')', ')', '{', 'Object', 'part', '=', 'parts', '.', 'next', '(', ')', ';', 'if', '(', 'part', '!=', 'null', ')', '{', 'appendable', '.', 'append', '(', 'separator', ')', ';', 'appendable', '.', 'append', '(', 'Joiner', '.', 'this', '.', 'toString', '(', 'part', ')', ')', ';', '}', '}', 'return', 'appendable', ';', '}', 'public', 'Joiner', 'useForNull', '(', 'String', 'nullText', ')', '{', 'throw', 'new', 'UnsupportedOperationException', '(', '"already specified skipNulls"', ')', ';', '}', 'public', 'MapJoiner', 'withKeyValueSeparator', '(', 'String', 'kvs', ')', '{', 'throw', 'new', 'UnsupportedOperationException', '(', '"can\'t use .skipNulls() with maps"', ')', ';', '}', '}', ';', '}']
+
+
+Sample Number: 16
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Returns', 'a', 'joiner', 'with', 'the', 'same', 'behavior', 'as', 'this', 'joiner', 'except', 'automatically', 'skipping', 'over', 'any', 'provided', 'null', 'elements', '.']
+
+
+Sample Number: 17
+----------------------------------------------------------------------------------------
+[code]:
+public static ImmutableIntArray of(int first, int... rest) {
+    checkArgument(
+        rest.length <= Integer.MAX_VALUE - 1, "the total number of elements must fit in an int");
+    int[] array = new int[rest.length + 1];
+    array[0] = first;
+    System.arraycopy(rest, 0, array, 1, rest.length);
+    return new ImmutableIntArray(array);
+  }
+
+
+Sample Number: 17
+----------------------------------------------------------------------------------------
+[docstring]:
+okay since we have to copy the just-created array anyway.
+
+
+Sample Number: 17
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'static', 'ImmutableIntArray', 'of', '(', 'int', 'first', ',', 'int', '...', 'rest', ')', '{', 'checkArgument', '(', 'rest', '.', 'length', '<=', 'Integer', '.', 'MAX_VALUE', '-', '1', ',', '"the total number of elements must fit in an int"', ')', ';', 'int', '[', ']', 'array', '=', 'new', 'int', '[', 'rest', '.', 'length', '+', '1', ']', ';', 'array', '[', '0', ']', '=', 'first', ';', 'System', '.', 'arraycopy', '(', 'rest', ',', '0', ',', 'array', ',', '1', ',', 'rest', '.', 'length', ')', ';', 'return', 'new', 'ImmutableIntArray', '(', 'array', ')', ';', '}']
+
+
+Sample Number: 17
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['okay', 'since', 'we', 'have', 'to', 'copy', 'the', 'just', '-', 'created', 'array', 'anyway', '.']
+
+
+Sample Number: 18
+----------------------------------------------------------------------------------------
+[code]:
+public ImmutableIntArray subArray(int startIndex, int endIndex) {
+    Preconditions.checkPositionIndexes(startIndex, endIndex, length());
+    return startIndex == endIndex
+        ? EMPTY
+        : new ImmutableIntArray(array, start + startIndex, start + endIndex);
+  }
+
+
+Sample Number: 18
+----------------------------------------------------------------------------------------
+[docstring]:
+Returns a new immutable array containing the values in the specified range.
+
+<p><b>Performance note:</b> The returned array has the same full memory footprint as this one
+does (no actual copying is performed). To reduce memory usage, use {@code subArray(start,
+end).trimmed()}.
+
+
+Sample Number: 18
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'ImmutableIntArray', 'subArray', '(', 'int', 'startIndex', ',', 'int', 'endIndex', ')', '{', 'Preconditions', '.', 'checkPositionIndexes', '(', 'startIndex', ',', 'endIndex', ',', 'length', '(', ')', ')', ';', 'return', 'startIndex', '==', 'endIndex', '?', 'EMPTY', ':', 'new', 'ImmutableIntArray', '(', 'array', ',', 'start', '+', 'startIndex', ',', 'start', '+', 'endIndex', ')', ';', '}']
+
+
+Sample Number: 18
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Returns', 'a', 'new', 'immutable', 'array', 'containing', 'the', 'values', 'in', 'the', 'specified', 'range', '.']
+
+
+Sample Number: 19
+----------------------------------------------------------------------------------------
+[code]:
+@Override
+  @CanIgnoreReturnValue
+  public int read() throws IOException {
+    int b = in.read();
+    if (b != -1) {
+      hasher.putByte((byte) b);
+    }
+    return b;
+  }
+
+
+Sample Number: 19
+----------------------------------------------------------------------------------------
+[docstring]:
+Reads the next byte of data from the underlying input stream and updates the hasher with the
+byte read.
+
+
+Sample Number: 19
+----------------------------------------------------------------------------------------
+[code_tokens]:
+['public', 'int', 'read', '(', ')', 'throws', 'IOException', '{', 'int', 'b', '=', 'in', '.', 'read', '(', ')', ';', 'if', '(', 'b', '!=', '-', '1', ')', '{', 'hasher', '.', 'putByte', '(', '(', 'byte', ')', 'b', ')', ';', '}', 'return', 'b', ';', '}']
+
+
+Sample Number: 19
+----------------------------------------------------------------------------------------
+[docstring_tokens]:
+['Reads', 'the', 'next', 'byte', 'of', 'data', 'from', 'the', 'underlying', 'input', 'stream', 'and', 'updates', 'the', 'hasher', 'with', 'the', 'byte', 'read', '.']
+
+

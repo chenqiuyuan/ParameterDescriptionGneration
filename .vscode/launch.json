@@ -1,0 +1,64 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "debug graph of data flow",
+            "type": "python",
+            "request": "launch",
+            "module": "code_parser.DFG.draw_DFG",
+            "justMyCode": true
+        },
+        {
+            "name": "debug processing batch data",
+            "type": "python",
+            "request": "launch",
+            "module": "data.batch_data_process",
+            "justMyCode": true
+        },
+        {
+            "name": "debug dataflow",
+            "type": "python",
+            "request": "launch",
+            "module": "code_parser.DFG.extract_dfg",
+            "justMyCode": true
+        },
+        {
+            "name": "debug visulization ast",
+            "type": "python",
+            "request": "launch",
+            "module": "code_parser.visualize_ast",
+            "justMyCode": true
+        },
+        {
+            "name": "debug approach",
+            "type": "python",
+            "request": "launch",
+            "module": "run.approach",
+            "justMyCode": true
+        },
+        {
+            "name": "debug data.draw_table",
+            "type": "python",
+            "request": "launch",
+            "module": "data.draw_table",
+            "justMyCode": true
+        },
+        {
+            "name": "debug code_parser.build",
+            "type": "python",
+            "request": "launch",
+            "module": "code_parser.build",
+            "justMyCode": true
+        },
+        {
+            "name": "debug data.explore_data",
+            "type": "python",
+            "request": "launch",
+            "module": "data.explore_data",
+            "justMyCode": true
+        }
+    ]
+}

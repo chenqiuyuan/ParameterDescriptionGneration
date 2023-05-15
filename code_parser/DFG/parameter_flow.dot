@@ -1,0 +1,141 @@
+// 这是一个有向图
+digraph {
+	9 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>x</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>1</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=doubleoctagon color=red]
+	12 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>y</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>2</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=tripleoctagon color=blue]
+	16 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>result</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>3</b></font></SUP></td>
+            </tr>
+        </table> 
+		>]
+	18 -> 16
+	18 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>0</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>4</b></font></SUP></td>
+            </tr>
+        </table> 
+		>]
+	22 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>y</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>5</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=tripleoctagon color=blue]
+	12 -> 22
+	24 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>x</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>6</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=doubleoctagon color=red]
+	9 -> 24
+	27 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>result</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>7</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=tripleoctagon color=blue]
+	29 -> 27
+	29 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>y</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>8</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=tripleoctagon color=blue]
+	12 -> 29
+	34 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>result</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>9</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=doubleoctagon color=red]
+	36 -> 34
+	36 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>x</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>10</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=doubleoctagon color=red]
+	9 -> 36
+	40 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#CCCCCC'><font point-size='24' color='black'><b>irrelevant</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>11</b></font></SUP></td>
+            </tr>
+        </table> 
+		>]
+	42 -> 40
+	42 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#CCCCCC'><font point-size='24' color='black'><b>"log message"</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>12</b></font></SUP></td>
+            </tr>
+        </table> 
+		>]
+	50 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#CCCCCC'><font point-size='24' color='black'><b>irrelevant</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>13</b></font></SUP></td>
+            </tr>
+        </table> 
+		>]
+	40 -> 50
+	54 [label=<
+        <table BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <tr>
+				<td> </td>
+                <td bgcolor='#00FF00'><font point-size='24' color='black'><b>result</b></font></td>
+                <td><SUP><font point-size='20' color='red'><b>14</b></font></SUP></td>
+            </tr>
+        </table> 
+		> shape=doubleoctagon color=red]
+	16 -> 54
+	27 -> 54
+	34 -> 54
+}
